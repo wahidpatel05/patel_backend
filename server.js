@@ -32,6 +32,14 @@ app.get(['/api/health', '/health'], (req, res) => {
   res.json({ ok: true });
 });
 
+app.get(['/', '/api'], (req, res) => {
+  res.json({
+    ok: true,
+    message: 'Patel Industries billing API is running',
+    health: '/api/health',
+  });
+});
+
 app.use(async (req, res, next) => {
   try {
     await connectToDatabase();
