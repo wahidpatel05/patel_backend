@@ -5,6 +5,7 @@ const cors = require('cors');
 const invoicesRouter = require('./routes/invoices');
 const settingsRouter = require('./routes/settings');
 const gstinLookupRouter = require('./routes/gstinLookup');
+const partiesRouter = require('./routes/parties');
 const connectToDatabase = require('./lib/connectToDatabase');
 
 const app = express();
@@ -53,6 +54,7 @@ app.use(async (req, res, next) => {
 app.use(['/api/settings', '/settings'], settingsRouter);
 app.use(['/api/invoices', '/invoices'], invoicesRouter);
 app.use(['/api/gstin-lookup', '/gstin-lookup'], gstinLookupRouter);
+app.use(['/api/parties', '/parties'], partiesRouter);
 
 async function startServer() {
   try {
