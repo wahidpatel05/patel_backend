@@ -5,6 +5,7 @@ const lineItemSchema = new mongoose.Schema(
     description: { type: String, default: '' },
     hsnCode: { type: String, default: '3923' },
     quantity: { type: Number, default: 0 },
+    bags: { type: Number, default: null },
     unit: { type: String, enum: ['PCS', 'KG', 'BOX', 'ROLL'], default: 'PCS' },
     rate: { type: Number, default: 0 },
     amount: { type: Number, default: 0 },
