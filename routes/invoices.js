@@ -1,8 +1,10 @@
 const express = require('express');
 const Invoice = require('../models/Invoice');
 const Settings = require('../models/Settings');
+const { sendInvoiceNotification } = require('../lib/mailer');
 
 const router = express.Router();
+
 
 router.get('/', async (req, res) => {
   try {
@@ -99,6 +101,16 @@ router.post('/', async (req, res) => {
       settings.nextInvoiceNumber = Math.max(settings.nextInvoiceNumber + 1, invoiceNumber + 1);
       await settings.save();
     }
+
+    // Send email notification (non-blocking — does not delay the API response)
+    const businessName = (settings && settings.businessName) ? settings.businessName : 'Patel Industries';
+    sendInvoiceNotification({
+      businessName,
+      invoice,
+      settings: settings ? settings.toObject() : {},
+    }).catch((err) => {
+      console.error('[Mailer] Failed to send invoice notification email:', err.message);
+    });
 
     return res.status(201).json(invoice);
   } catch (error) {

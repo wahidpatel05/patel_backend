@@ -11,7 +11,7 @@ const defaultSettings = {
   udyogAadhar: 'MH17A0062572',
   mobile1: '9987567861',
   mobile2: '98192 82701',
-  email: 'patelindustries@gmail.com',
+  email: 'patelindustries92@gmail.com',
   bankName: 'CANARA BANK',
   bankBranch: 'Goregaon SME',
   ifsc: 'CNRB0015017',
