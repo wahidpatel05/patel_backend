@@ -33,7 +33,13 @@ router.get('/', async (req, res) => {
 router.get('/next-number', async (req, res) => {
   try {
     const settings = await Settings.findOne();
-    return res.json({ nextInvoiceNumber: settings ? settings.nextInvoiceNumber : 73 });
+    const settingsNext = settings ? settings.nextInvoiceNumber : 111;
+
+    // Also check the highest existing invoice to avoid collisions
+    const lastInvoice = await Invoice.findOne().sort({ invoiceNumber: -1 }).select('invoiceNumber');
+    const dbNext = lastInvoice ? lastInvoice.invoiceNumber + 1 : 111;
+
+    return res.json({ nextInvoiceNumber: Math.max(settingsNext, dbNext) });
   } catch (error) {
     return res.status(500).json({ message: 'Failed to load next invoice number' });
   }
@@ -102,17 +108,21 @@ router.post('/', async (req, res) => {
       await settings.save();
     }
 
-    // Send email notification (non-blocking — does not delay the API response)
+    // Send email notification (awaited so it completes before Vercel kills the function)
     const businessName = (settings && settings.businessName) ? settings.businessName : 'Patel Industries';
-    sendInvoiceNotification({
-      businessName,
-      invoice,
-      settings: settings ? settings.toObject() : {},
-    }).catch((err) => {
+    let emailSent = true;
+    try {
+      await sendInvoiceNotification({
+        businessName,
+        invoice,
+        settings: settings ? settings.toObject() : {},
+      });
+    } catch (err) {
       console.error('[Mailer] Failed to send invoice notification email:', err.message);
-    });
+      emailSent = false;
+    }
 
-    return res.status(201).json(invoice);
+    return res.status(201).json({ ...invoice.toObject(), emailSent });
   } catch (error) {
     if (error && error.code === 11000) {
       return res.status(400).json({ message: 'Invoice number already exists. Please use a different number.' });

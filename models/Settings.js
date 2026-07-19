@@ -15,7 +15,7 @@ const settingsSchema = new mongoose.Schema(
     ifsc: { type: String, default: '' },
     accountNumber: { type: String, default: '' },
     jurisdiction: { type: String, default: '' },
-    nextInvoiceNumber: { type: Number, default: 73 },
+    nextInvoiceNumber: { type: Number, default: 111 },
   },
   { timestamps: true }
 );
